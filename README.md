@@ -14,7 +14,7 @@ This script has been developed to aid penetration testers and red teams in the d
 # Usage Example:
 ```$ python pwned_api.py -af emails -p```
 
-![alt text](screenshots/filename.png "Usage Example")
+![alt text](image.png "Usage Example")
 
 # Requirements:
 ```$ pip install cfscrape```
