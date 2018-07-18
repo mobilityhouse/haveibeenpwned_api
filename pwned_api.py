@@ -51,7 +51,7 @@ ENDC = '\033[0m'
 
 rate = 2.0 # Time to prevent rate limiting issue
 endpoint = "haveibeenpwned.com" # API Website
-cfdirectory = "/api/breachedaccount/test@example.com" # API Request to bypass cloudflare
+cfdirectory = "/api/v2/breachedaccount/test@example.com" # API Request to bypass cloudflare
 sslVerify = True
 
 
@@ -141,7 +141,7 @@ def checkEmail(email):
     elif str(req.status_code) == "429":
         print(WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC)
         # Checking to see if the server has limited us for a long time or possibly banned us
-        if str(req.headers['Retry-After']) <= 300:
+        if int(req.headers['Retry-After']) <= 300:
             print(FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC)
             print(FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC)
             f.close()
