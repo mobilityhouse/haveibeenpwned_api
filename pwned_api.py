@@ -72,8 +72,8 @@ useragent = {'User-Agent' : 'PwnChecker-API-Python-Script'}
 # Main Directory for file output
 directory = "Output"
 if not os.path.exists(directory):
-	os.makedirs(directory)
-	print OKBLUE + "[+] Making directory for all output!" + ENDC
+    os.makedirs(directory)
+    print(OKBLUE + "[+] Making directory for all output!" + ENDC)
 
 def main():
     # Setting global variables as "name" was throwing errors.
@@ -83,41 +83,41 @@ def main():
     global name
     global pastes
 
-    print OKBLUE + "[!] Cookie Value being used is: " + ENDC + str(cookies)
-    print OKBLUE + "[!] User Agent being used is: " + ENDC + str(useragent) + "\n"
-    
+    print(OKBLUE + "[!] Cookie Value being used is: " + ENDC + str(cookies))
+    print(OKBLUE + "[!] User Agent being used is: " + ENDC + str(useragent) + "\n")
+
     if address != "None":
-        print OKBLUE + "[+] Checking single address now!" + ENDC + "\n"
+        print(OKBLUE + "[+] Checking single address now!" + ENDC + "\n")
         checkEmail(address)
         if args.pastes:
-            print "\n" + OKBLUE + "[+] Obtaining pastes from accounts that were breached!" + ENDC + "\n"
+            print("\n" + OKBLUE + "[+] Obtaining pastes from accounts that were breached!" + ENDC + "\n")
             account = [line.rstrip('\n') for line in open("Output/breached_accounts.txt")] # Open the created breached_accounts.txt file that was created in checkEmail
             for account in account:
                 obtainPastes(account)
     elif filename != "None":
-        print OKBLUE + "[+] Checking list of addresses now!" + ENDC + "\n"
+        print(OKBLUE + "[+] Checking list of addresses now!" + ENDC + "\n")
         email = [line.rstrip('\n') for line in open(filename)] # Strip the newlines out of the file
         for email in email:
             checkEmail(email)
         if args.pastes:
-            print "\n" + OKBLUE + "[+] Obtaining pastes from accounts that were breached!" + ENDC + "\n"
+            print("\n" + OKBLUE + "[+] Obtaining pastes from accounts that were breached!" + ENDC + "\n")
             account = [line.rstrip('\n') for line in open("Output/breached_accounts.txt")] # Open the created breached_accounts.txt file that was created in checkEmail
             for account in account:
                 obtainPastes(account)
 
     elif args.allbreaches:
-        print OKBLUE + "[+] Getting all breaches in system!" + ENDC + "\n" 
+        print(OKBLUE + "[+] Getting all breaches in system!" + ENDC + "\n" )
         allBreaches()
     elif name != "None":
-        print OKBLUE + "[+] Checking single breach now!" + ENDC + "\n"
+        print(OKBLUE + "[+] Checking single breach now!" + ENDC + "\n")
         checkBreach(name)
     elif bfilename != "None":
-        print OKBLUE + "[+] Checking list of breaches now!" + ENDC + "\n"
+        print(OKBLUE + "[+] Checking list of breaches now!" + ENDC + "\n")
         name = [line.rstrip('\n') for line in open(bfilename)] # Strip the newlines out of the file
         for name in name:
             checkBreach(name)
     else:
-        print FAIL + "[!] Nothing to do! Exiting" + ENDC
+        print(FAIL + "[!] Nothing to do! Exiting" + ENDC)
         sys.exit()
 
 
@@ -128,22 +128,22 @@ def checkEmail(email):
     req = requests.get("https://" + endpoint + "/api/breachedaccount/" + email, headers = useragent, cookies = cookies, verify = sslVerify)
     # The address has not been breached
     if str(req.status_code) == "404":
-        print OKGREEN + "[!] " + email + " has not been breached." + ENDC
+        print(OKGREEN + "[!] " + email + " has not been breached." + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return False
     # The address as been breached
     elif str(req.status_code) == "200":
-        print OKRED + "[!] " + email + " has been breached!" + ENDC
+        print(OKRED + "[!] " + email + " has been breached!" + ENDC)
         f.write(email + "\n")
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return True
     # Rate limit triggered
     elif str(req.status_code) == "429":
-        print WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC
+        print(WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC)
         # Checking to see if the server has limited us for a long time or possibly banned us
         if str(req.headers['Retry-After']) <= 300:
-            print FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC
-            print FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC
+            print(FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC)
+            print(FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC)
             f.close()
             sys.exit()
         else:
@@ -152,11 +152,11 @@ def checkEmail(email):
             checkEmail(email) # Reissue request
     # CloudFlare has stopped us
     elif str(req.status_code) == 503:
-        print FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC
+        print(FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC)
         f.close()
         sys.exit()
     else:
-        print WARNING + "[!] Something went wrong while checking " + email + ENDC
+        print(WARNING + "[!] Something went wrong while checking " + email + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return True
 
@@ -166,13 +166,13 @@ def obtainPastes(account):
     directory = "Output/pastes/"
     if not os.path.exists(directory):
         os.makedirs(directory)
-        print OKBLUE + "[+] Making directory for pastes to be placed in!" + ENDC
-    
+        print(OKBLUE + "[+] Making directory for pastes to be placed in!" + ENDC)
+
     sleep = rate
     req = requests.get("https://" + endpoint + "/api/v2/pasteaccount/" + account, headers = useragent, cookies = cookies, verify = sslVerify)
     # The account has no pastes
     if str(req.status_code) == "404":
-        print OKGREEN + "[!] " + account + " has no pastes." + ENDC
+        print(OKGREEN + "[!] " + account + " has no pastes." + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return False
     # The account has pastes
@@ -181,16 +181,16 @@ def obtainPastes(account):
         with open(directory + account + ".txt", "w+") as outfile:
             json.dump(req.content, outfile)
 
-        print OKRED + "[!] " + account + " has pastes!" + ENDC
+        print(OKRED + "[!] " + account + " has pastes!" + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return True
     # Rate limit triggered
     elif str(req.status_code) == "429":
-        print WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC
+        print(WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC)
         # Checking to see if the server has limited us for a long time or possibly banned us
         if str(req.headers['Retry-After']) <= 300:
-            print FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC
-            print FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC
+            print(FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC)
+            print(FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC)
             f.close()
             sys.exit()
         else:
@@ -199,11 +199,11 @@ def obtainPastes(account):
             obtainPastes(account) # Reissue request
     # CloudFlare has stopped us
     elif str(req.status_code) == 503:
-        print FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC
+        print(FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC)
         f.close()
         sys.exit()
     else:
-        print WARNING + "[!] Something went wrong while checking " + account + ENDC
+        print(WARNING + "[!] Something went wrong while checking " + account + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return True
 
@@ -213,12 +213,12 @@ def obtainPastes(account):
 def allBreaches():
     req = requests.get("https://" + endpoint + "/api/v2/breaches", headers = useragent, cookies = cookies, verify = sslVerify)
     if str(req.status_code) == "200":
-        print OKGREEN + "[!] Obtained breaches and saving to file!" + ENDC
+        print(OKGREEN + "[!] Obtained breaches and saving to file!" + ENDC)
         with open('Output/breaches.txt', 'w+') as outfile:
-	    json.dump(req.content, outfile)
+            json.dump(req.content, outfile)
     else:
-	print WARNING + "[!] Something went wrong while obtaining breaches" + ENDC
-	sys.exit()
+        print(WARNING + "[!] Something went wrong while obtaining breaches" + ENDC)
+        sys.exit()
 
 
 
@@ -229,22 +229,22 @@ def checkBreach(name):
     req = requests.get("https://" + endpoint + "/api/v2/breach/" + name, headers = useragent, cookies = cookies, verify = sslVerify)
     # The breach does not exist
     if str(req.status_code) == "404":
-        print OKGREEN + "[!] " + name + " is not a valid breach." + ENDC
+        print(OKGREEN + "[!] " + name + " is not a valid breach." + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return False
     # The breach exists
     elif str(req.status_code) == "200":
-        print OKRED + "[!] " + name + " is a breach!" + ENDC
+        print(OKRED + "[!] " + name + " is a breach!" + ENDC)
         f.write(name + "\n")
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return True
     # Rate limit triggered
     elif str(req.status_code) == "429":
-        print WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC
+        print(WARNING + "[!] Rate limit exceeded, server instructed us to retry after " + req.headers['Retry-After'] + " seconds" + ENDC)
         # Checking to see if the server has limited us for a long time or possibly banned us
         if str(req.headers['Retry-After']) <= 300:
-            print FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC
-            print FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC
+            print(FAIL + "[!] Server has rate limited us for longer then 5 minutes!" + ENDC)
+            print(FAIL + "[!] Do one of the following: Be patient you crazy person, change your IP, change the URL (remove or add v2 after /api/), or just rerun the script and pray!" + ENDC)
             f.close()
             sys.exit()
         else:
@@ -253,11 +253,11 @@ def checkBreach(name):
             checkBreach(name) # Reissue request
     # CloudFlare has stopped us
     elif str(req.status_code) == 503:
-        print FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC
+        print(FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC)
         f.close()
         sys.exit()
     else:
-        print WARNING + "[!] Something went wrong while checking " + name + ENDC
+        print(WARNING + "[!] Something went wrong while checking " + name + ENDC)
         time.sleep(sleep) # sleep so that we don't trigger the rate limit
         return True
 
