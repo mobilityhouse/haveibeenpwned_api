@@ -198,7 +198,7 @@ def obtainPastes(account):
             time.sleep(sleep) # Sleeping a little longer as the server instructed us to do
             obtainPastes(account) # Reissue request
     # CloudFlare has stopped us
-    elif str(req.status_code) == 503:
+    elif str(req.status_code) == "503":
         print(FAIL + "[!] CloudFlare has stopped our request! Ensure you are using a valid cookie with the user-agent that obtained that cookie!" + ENDC)
         f.close()
         sys.exit()
